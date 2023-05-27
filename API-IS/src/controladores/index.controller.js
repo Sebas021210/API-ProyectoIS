@@ -108,7 +108,9 @@ const getCharlas = async (req, res) => {
 
 const getHistorial_Estudiantes = async (req, res) => {
     const consulta = `
-        SELECT * FROM historial_estudiantes
+        SELECT h.carne, e.nombres, e.apellidos, h.charlas_delva, h.act_charlas_delva, h.fal_charlas_delva FROM historial_estudiantes h
+        JOIN estudiantes e ON h.carne = e.carne
+        ORDER BY h.fal_charlas_delva ASC
     `;
     try{
         const response = await pool.query(consulta);
@@ -124,7 +126,9 @@ const getHistorial_Estudiantes = async (req, res) => {
 
 const getHistorial_Estudiantes_Beca = async (req, res) => {
     const consulta = `
-        SELECT * FROM historial_estudiantes_beca
+        SELECT hC.carne, e.nombres, e.apellidos, hC.max_horas_beca, hC.act_horas_beca, hC.fal_horas_beca FROM historial_estudiantes_beca hC
+        JOIN estudiantes e ON hC.carne = e.carne
+        ORDER BY hC.fal_horas_beca DESC
     `;
     try{
         const response = await pool.query(consulta);
@@ -142,7 +146,7 @@ const nuevaCharla = async (req, res) => {
     const { nombre_charla, descripcion, fecha, hora, formato, comentarios } = req.body;
     const consulta = `
         INSERT INTO charlas (nombre_charla, descripcion, fecha, hora, formato, comentarios)
-        VALUES ('$1', '$2', '$3', '$4', '$5', '$6')
+        VALUES ($1, $2, $3, $4, $5, $6)
     `;
     try{
         const response = await pool.query(consulta, [nombre_charla, descripcion, fecha, hora, formato, comentarios]);
@@ -164,7 +168,7 @@ const nuevaActividad = async (req, res) => {
     const { nombre_actividad, descripcion, fecha, hora, cupo_estudiantes, turnos } = req.body;
     const consulta = `
         INSERT INTO actividades (nombre_actividad, descripcion, fecha, hora, cupo_estudiantes, turnos)
-        VALUES ('$1', '$2', '$3', '$4', '$5', '$6')
+        VALUES ($1, $2, $3, $4, $5, $6)
     `;
     try{
         const response = await pool.query(consulta, [nombre_actividad, descripcion, fecha, hora, cupo_estudiantes, turnos]);
